@@ -114,6 +114,7 @@ add_cmts_mic (unsigned char *tlvbuf, unsigned int tlvbuflen,
 	      memcpy (dp, cp, cp[1] + 2);
 	      dp = dp + cp[1] + 2;
 	      cp = cp + cp[1] + 2;
+
 	    }
 	  else
 	    {
@@ -125,6 +126,7 @@ add_cmts_mic (unsigned char *tlvbuf, unsigned int tlvbuflen,
 	    }
 	}
     }
+
   fprintf (stdout, "##### Calculating CMTS MIC using TLVs:\n");
   decode_main_aggregate (cmts_tlvs, dp - cmts_tlvs);
   fprintf (stdout, "##### End of CMTS MIC TLVs\n");
@@ -153,6 +155,11 @@ add_mta_hash (unsigned char *tlvbuf, unsigned int tlvbuflen, unsigned int hash) 
   if (hash == 2) {
     memcpy (tlvbuf + tlvbuflen - 3, "\x0b\x26\x30\x24\x06\x0c\x2b\x06\x01\x04\x01\xba\x08\x01\x01\x02\x09\x00\x04\x14", 20);
     tlvbuflen += 17;
+  }
+  if (hash == 3)
+  {
+    memcpy (tlvbuf + tlvbuflen - 3, "\x0b\x25\x30\x23\x06\x0b\x2b\x06\x01\x02\x01\x81\x0C\x01\x02\x0B\x00\x04\x14", 19);
+    tlvbuflen += 16;
   }
 
   memcpy (tlvbuf + tlvbuflen, hash_value, SHA_DIGEST_LENGTH);
@@ -282,8 +289,8 @@ usage ()
 	"	-M \"PATH1:PATH2\"\n"
 	"		Specify the SNMP MIB directory when encoding or decoding configuration\n"
 	"		files.\n\n"
-	"	-na | -eu\n"
-	"		Adds CableLabs PacketCable or Excentis EuroPacketCable SHA1 hash\n"
+	"	-na | -eu | -spechash\n"
+	"		Adds CableLabs PacketCable or Excentis EuroPacketCable or special SHA1 hash\n"
 	"		when encoding an MTA config file.\n\n"
 	"	-dialplan\n"
 	"		Adds a PC20 dialplan from an external file called \"dialplan.txt\" in\n"
@@ -352,6 +359,14 @@ main (int argc, char *argv[])
         usage();
       }
       hash = 2;
+      continue;
+    }
+
+    if (!strcmp (argv[0], "-spechash")) {
+      if (hash) {
+        usage();
+      }
+      hash = 3;
       continue;
     }
 
@@ -560,6 +575,11 @@ int encode_one_file ( char *input_file, char *output_file,
     printf("Adding EU ConfigHash to MTA file.\n");
     buflen = add_mta_hash (buffer, buflen, hash);
   }
+  if (hash == 3) {
+    printf("Adding Special ConfigHash to MTA file.\n");
+    buflen = add_mta_hash (buffer, buflen, hash);
+  }
+
 
   fprintf (stdout, "Final content of config file:\n");
 
@@ -657,7 +677,7 @@ setup_mib_flags(int resolve_oids, char *custom_mibs) {
 #else
   init_mib ();
 #endif
-  
+
   if (!netsnmp_ds_get_boolean
       (NETSNMP_DS_LIBRARY_ID, NETSNMP_DS_LIB_PRINT_NUMERIC_OIDS))
     {
