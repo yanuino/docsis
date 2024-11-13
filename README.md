@@ -1,20 +1,23 @@
 Docsis utility
 ==============
 
-[![Build Status](https://travis-ci.org/AdrianSimionov/docsis.svg?branch=master)](https://travis-ci.org/AdrianSimionov/docsis)
-[![Coverage Status](https://coveralls.io/repos/github/AdrianSimionov/docsis/badge.svg?branch=master)](https://coveralls.io/github/AdrianSimionov/docsis?branch=master)
-
 This program encodes a DOCSIS binary configuration file from a human-readable text configuration file.
 
-It was originaly developed at http://docsis.sourceforge.net and later on moved to https://github.com/rlaager/docsis
+It is a fork of https://github.com/rlaager/docsis
 
 This build is an experimental one and is based on a fork from the GitHub project. Please use this build on your own risk.
 
-This tool is fully compliant with the following specs:  
-CM-SP-eRouter-I12  
-DPoE-SP-DEMARCv1.0-I04  
-CM-SP-L2VPN-I13  
-CM-SP-MULPIv3.0-I24  
+Changes
+-------
+
+### TODO
+- Add copyright information
+- Increment version
+
+### 2024-11-06
+- Merge branch "Add DigitMap keyword for intuitively inserting digit map (dial plan)" from [Richard Kung](https://github.com/richard-kung/docsis/)
+- Add IETF hash option for encoding MTA file
+- Fork from https://github.com/rlaager/docsis
 
 Linux/Unix
 ----------
